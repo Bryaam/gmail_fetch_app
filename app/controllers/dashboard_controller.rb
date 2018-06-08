@@ -7,12 +7,6 @@ class DashboardController < ApplicationController
 
   def user_emails
     begin
-      #credentials = Google::Auth::UserAuthorizer.new(
-      #  ENV['GOOGLE_CLIENT_ID'],
-      #  @user.credential.access_token,
-      #  Google::Apis::GmailV1::AUTH_GMAIL_MODIFY
-      #)
-
       service = GoogleApi.new @user
 
       @messages_list = service.get_emails
@@ -29,7 +23,8 @@ class DashboardController < ApplicationController
   end
 
   def refresh_credentials
-
+    @user.credential.refresh!
+    redirect_to dashboard_index_path
   end
 
   private

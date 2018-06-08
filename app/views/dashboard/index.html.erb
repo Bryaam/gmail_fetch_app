@@ -8,7 +8,7 @@
         <th>Id</th>
         <th>Email</th>
         <th>Token</th>
-        <th>Expire</th>
+        <th>Expired</th>
         <th>Link</th>
       </tr>
     </thead>
@@ -18,8 +18,14 @@
           <td><%= user.id %></td>
           <td><%= user.email %></td>
           <td><%= user.credential.access_token %></td>
-          <td><%= user.credential.expires_at %></td>
-          <td><%= link_to "Emails", user_emails_dashboard_path(user) %></td>
+          <td><%= user.credential.expired? %></td>
+          <td>
+            <% if user.credential.expired? %>
+              <%= link_to "Refresh", refresh_credentials_dashboard_path(user) %>
+            <% else %>
+              <%= link_to "Emails", user_emails_dashboard_path(user) %>
+            <% end%>
+          </td>
         </tr>
       <% end %>
     </tbody>
