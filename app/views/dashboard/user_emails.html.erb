@@ -1,0 +1,9 @@
+<div>
+  <%= @user.email %>
+  <br>
+  <% if @messages_list.nil? %>
+    Invalid credentials
+  <% else %>
+    Got <%= @messages_list.result_size_estimate %> messages!!!
+  <% end %>
+</div>

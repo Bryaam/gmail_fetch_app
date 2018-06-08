@@ -1,0 +1,27 @@
+<div>
+  Users
+</div>
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Email</th>
+        <th>Token</th>
+        <th>Expire</th>
+        <th>Link</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.email %></td>
+          <td><%= user.credential.access_token %></td>
+          <td><%= user.credential.expires_at %></td>
+          <td><%= link_to "Emails", user_emails_dashboard_path(user) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
