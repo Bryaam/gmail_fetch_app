@@ -12,12 +12,6 @@ class User < ApplicationRecord
     credentials = access_token.credentials
     user = User.where(email: data['email']).first
 
-    #if user
-      #user.build_credential(
-      #  access_token: credentials['token'],
-      #  expires_at: credentials['expires_at']
-      #)
-      #user.credential.save
     unless user
       user = User.create(
         email: data['email'],
@@ -26,7 +20,6 @@ class User < ApplicationRecord
       )
       user.create_credential(
         access_token: credentials['token'],
-        #expires_at: credentials['expires_at'],
         expires_at: Time.at(credentials['expires_at']).to_datetime,
         refresh_token: credentials['refresh_token']
       )

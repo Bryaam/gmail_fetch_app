@@ -9,7 +9,7 @@ class DashboardController < ApplicationController
     begin
       service = GoogleApi.new @user
 
-      @messages_list = service.get_emails
+      @messages_list = service.get_emails DateTime.now - 1.hour
 
       p "-------------------------------"
       p @messages_list

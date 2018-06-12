@@ -15,8 +15,12 @@ class GoogleApi
     @service = service
   end
 
-  def get_emails
-    return self.service.list_user_messages('me', max_results: 5, label_ids: ["INBOX"])
+  def get_emails before_date, after_date
+    return self.service.list_user_messages('me', max_results: 100, label_ids: ["INBOX"], q: "after: #{after_date}, before: #{before_date}")
+  end
+
+  def get_email email
+    return self.service.get_user_message('me', email.id, format: 'full')
   end
 
   def self.request_token credential
