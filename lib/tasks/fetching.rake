@@ -4,9 +4,8 @@ namespace :fetching do
     User.all.each do |user|
       user.credential.refresh! if user.credential.expired?
       service = GoogleApi.new user
-      before_date = DateTime.now - 1.day
-      after_date = DateTime.now
-      emails = service.get_emails(after_date.to_i, before_date.to_i)
+
+      emails = user.retrieve_emails(service)
 
       path = "running_tasks/pids/#{user.id}"
       content = "Processing"
@@ -18,11 +17,25 @@ namespace :fetching do
       puts user.email
       puts emails
       puts "-------------------------------------------"
-      unless emails.messages.nil?
-        emails.messages.each do |email|
-          current_email = service.get_email email
-          puts current_email.to_json
+      begin
+        if emails && emails.messages
+          emails.messages.reverse.each do |email|
+            current_email = service.get_email email
+            #puts current_email.to_json
+            valid_email = EmailParser.parse(current_email, user.last_email_id)
+            if valid_email
+              user.update_attributes(last_sync: Time.parse(valid_email.sent_at), last_email_id: valid_email.id)
+              unless valid_email.filter_email?
+                # Send
+
+              end
+            end
+          end
         end
+      rescue => exception
+        puts "Error"
+        puts exception
+        Rails.logger.error("An error ocurred")
       end
       puts "-------------------------------------------"
     end

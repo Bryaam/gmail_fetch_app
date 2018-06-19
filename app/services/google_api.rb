@@ -15,8 +15,8 @@ class GoogleApi
     @service = service
   end
 
-  def get_emails before_date, after_date
-    return self.service.list_user_messages('me', max_results: 100, label_ids: ["INBOX"], q: "after: #{after_date}, before: #{before_date}")
+  def get_emails after_date, before_date
+    return self.service.list_user_messages('me', max_results: 10, q: "after: #{after_date}, before: #{before_date}")
   end
 
   def get_email email

@@ -2,10 +2,12 @@ class Credential < ApplicationRecord
   belongs_to :user
 
   def to_params
-    {'refresh_token' => refresh_token,
-    'client_id' => ENV['GOOGLE_CLIENT_ID'],
-    'client_secret' => ENV['GOOGLE_CLIENT_SECRET'],
-    'grant_type' => 'refresh_token'}
+    {
+      'refresh_token' => refresh_token,
+      'client_id' => ENV['GOOGLE_CLIENT_ID'],
+      'client_secret' => ENV['GOOGLE_CLIENT_SECRET'],
+      'grant_type' => 'refresh_token'
+    }
   end
 
   def refresh!
