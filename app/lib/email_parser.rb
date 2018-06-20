@@ -1,15 +1,12 @@
 class EmailParser
   require "base64"
+  INBOUND_EMAIL_LABEL = "inbound".freeze
+  OUTBOUND_EMAIL_LABEL = "outbound".freeze
 
   def self.parse email_body, last_email_id
     begin
       id = email_body.id
-
-      p "Impresion de comparacion de ids"
-      p id
-      p last_email_id
       if(id == last_email_id)
-        p "Entra al NULO"
         return nil
       else
         labels = email_body.label_ids
@@ -34,18 +31,6 @@ class EmailParser
         data = payload.parts[0].body.data # Will raise exception if no body is present
         data = data.to_str if data
 
-
-
-        #body = Base64.decode64(data)
-        p "XXXXXXXXXXXXXXXXXXXX"
-        # puts "id: #{id}"
-        # puts "from: #{from}"
-        # puts "to: #{to}"
-        # puts "subject: #{subject}"
-        # puts "cc: #{cc}"
-        # puts "date: #{date}"
-        # puts "direction: #{direction}"
-        # puts "body: #{data}"
         registered_email = Email.new(
           id,
           EmailParser.parse_email_lists(to),
@@ -56,11 +41,10 @@ class EmailParser
           date,
           direction
         )
-        #puts registered_email.to_params
         return registered_email
-        p "XXXXXXXXXXXXXXXXXXXX"
       end
     rescue => exception
+      # WIP
       p exception
       return nil
     end
@@ -70,15 +54,13 @@ class EmailParser
     collection.each do |element|
       return element.value if element.name == key
     end
-    nil
-    #attribute = collection.find{|key| key.name == key }
-    #attribute.value
+    return nil
   end
 
   def self.get_email_direction labels
-    return "Inbound" if labels.include? "INBOX"
-    return "Outbound" if labels.include? "SENT"
-    nil
+    return INBOUND_EMAIL_LABEL if labels.include? "INBOX"
+    return OUTBOUND_EMAIL_LABEL if labels.include? "SENT"
+    return nil
   end
 
   def self.parse_email_lists string
