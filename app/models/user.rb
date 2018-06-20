@@ -12,25 +12,37 @@ class User < ApplicationRecord
     credentials = access_token.credentials
     user = User.where(email: data['email']).first
 
-    #if user
-      #user.build_credential(
-      #  access_token: credentials['token'],
-      #  expires_at: credentials['expires_at']
-      #)
-      #user.credential.save
     unless user
       user = User.create(
         email: data['email'],
         uid: access_token.uid,
-        password: Devise.friendly_token[0,20]
+        password: Devise.friendly_token[0,20],
+        last_sync: DateTime.now
       )
       user.create_credential(
         access_token: credentials['token'],
-        #expires_at: credentials['expires_at'],
         expires_at: Time.at(credentials['expires_at']).to_datetime,
         refresh_token: credentials['refresh_token']
       )
     end
     user
   end
+
+  def retrieve_emails service
+    begin
+      before_date = DateTime.now
+      after_date = self.last_sync
+      emails = service.get_emails(after_date.to_i, before_date.to_i)
+      unless emails.messages.nil?
+        # WIP later its better to add the last sync email date on the user attribute, so we can continue from there
+        #self.update_attributes(last_sync: before_date)
+        return emails
+      end
+      nil
+    rescue => exception
+      Rails.logger.error("An error ocurred when retrieving emails from user #{self.email}")
+      return nil
+    end
+  end
+
 end
