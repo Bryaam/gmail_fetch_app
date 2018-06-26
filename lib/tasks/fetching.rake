@@ -4,6 +4,7 @@ namespace :fetching do
   desc 'Retrieves every user email list'
   task email_retrieve: :environment do
     User.all.each do |user|
+      puts "Checking user #{user.email}"
       user.credential.refresh! if user.credential.expired?
       service = GoogleApi.new user
 
@@ -33,8 +34,14 @@ namespace :fetching do
         end
       rescue StandardError => exception
         # WIP
+        puts exception
         Rails.logger.send(:error, exception)
       end
     end
+  end
+
+  desc 'Only to test'
+  task test_rake: :environment do
+    puts 'Test passed'
   end
 end

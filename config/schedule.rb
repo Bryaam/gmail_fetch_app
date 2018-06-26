@@ -18,8 +18,12 @@
 
 # Learn more: http://github.com/javan/whenever
 
-set :output, "/log/whenever.log"
+set :output, "#{path}/log/whenever.log"
 
 every 2.minutes do
   rake "fetching:email_retrieve",  environment: 'development'
 end
+
+# every 2.minutes do
+#   rake "fetching:test_rake", environment: 'development'
+# end
