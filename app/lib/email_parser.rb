@@ -58,8 +58,8 @@ class EmailParser
   end
 
   def self.get_email_direction labels
-    return INBOUND_EMAIL_LABEL if labels.include? "INBOX"
-    return OUTBOUND_EMAIL_LABEL if labels.include? "SENT"
+    return INBOUND_EMAIL_LABEL if labels.include? 'INBOX'
+    return OUTBOUND_EMAIL_LABEL if labels.include? 'SENT'
     return nil
   end
 

@@ -2,7 +2,7 @@
   <%= @user.email %>
   <br>
   <% if @messages_list.nil? %>
-    Invalid credentials
+    No emails found
   <% else %>
     Got <%= @messages_list.result_size_estimate %> messages!!!
   <% end %>
