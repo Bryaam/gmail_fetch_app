@@ -1,49 +1,44 @@
 class EmailParser
-  require "base64"
-  INBOUND_EMAIL_LABEL = "inbound".freeze
-  OUTBOUND_EMAIL_LABEL = "outbound".freeze
+  INBOUND_EMAIL_LABEL = 'inbound'.freeze
+  OUTBOUND_EMAIL_LABEL = 'outbound'.freeze
 
-  def self.parse email_body, last_email_id
+  def self.parse(email_body, last_email_id)
     begin
       id = email_body.id
-      if(id == last_email_id)
-        return nil
-      else
-        labels = email_body.label_ids
+      return nil if id == last_email_id
+      labels = email_body.label_ids
 
-        epoch_date = email_body.internal_date # This can be used to determine the last syncronized email
+      epoch_date = email_body.internal_date # This can be used to determine the last syncronized email
 
-        payload = email_body.payload
+      payload = email_body.payload
+      headers = payload.headers
 
-        headers = payload.headers
+      from = EmailParser.get_header_attribute(headers, 'From')
+      to = EmailParser.get_header_attribute(headers, 'To')
+      subject = EmailParser.get_header_attribute(headers, 'Subject')
+      cc = EmailParser.get_header_attribute(headers, 'Cc')
+      date = EmailParser.get_header_attribute(headers, 'Date')
 
-        from = EmailParser.get_header_attribute(headers, "From")
-        to = EmailParser.get_header_attribute(headers, "To")
-        subject = EmailParser.get_header_attribute(headers, "Subject")
-        cc = EmailParser.get_header_attribute(headers, "Cc")
-        date = EmailParser.get_header_attribute(headers, "Date")
+      # Determining direction according to label
+      direction = EmailParser.get_email_direction labels
 
-        # Determining direction according to label
-        direction = EmailParser.get_email_direction labels
+      data = payload.parts[0].body.data # Will raise exception if no body is present
+      data = data.to_str if data
 
-        data = payload.parts[0].body.data # Will raise exception if no body is present
-        data = data.to_str if data
-
-        return Email.new(
-          id,
-          EmailParser.parse_email_lists(to),
-          EmailParser.parse_email_lists(from),
-          EmailParser.parse_email_lists(cc),
-          subject,
-          data,
-          date,
-          direction
-        )
-      end
-    rescue => exception
+      return Email.new(
+        id,
+        EmailParser.parse_email_lists(to),
+        EmailParser.parse_email_lists(from),
+        EmailParser.parse_email_lists(cc),
+        subject,
+        data,
+        date,
+        direction
+      )
+    rescue StandardError => exception
       # WIP
       Rails.logger.send(:error, exception)
-      return nil
+      nil
     end
   end
 
@@ -51,25 +46,24 @@ class EmailParser
     collection.each do |element|
       return element.value if element.name == key
     end
-    return nil
+    nil
   end
 
   # INBOX would be inbound
   # SENT would be outbound
-  def self.get_email_direction labels
+  def self.get_email_direction(labels)
     return INBOUND_EMAIL_LABEL if labels.include? 'INBOX'
     return OUTBOUND_EMAIL_LABEL if labels.include? 'SENT'
-    return nil
+    nil
   end
 
-  def self.parse_email_lists string
+  def self.parse_email_lists(string)
     return nil if string.nil?
     list = []
-    substrings = string.split(",")
+    substrings = string.split(',')
     substrings.each do |substring|
-      list.append(substring.split("<").last.split(">").first)
+      list.append(substring.split('<').last.split('>').first)
     end
-    return list.join(",")
+    list.join(',')
   end
-
 end

@@ -8,21 +8,6 @@ class User < ApplicationRecord
   has_one :credential, dependent: :destroy
 
   def self.from_omniauth(access_token)
-    # puts "----------------------------------------"
-    # puts access_token
-    # puts "Info: "
-    # #puts access_token.info
-    # puts access_token[:info]
-    # puts "Credentials: "
-    # #puts access_token.credentials
-    # puts access_token[:credentials]
-    # puts "Tokens: "
-    # #puts access_token.credentials[:token]
-    # puts access_token[:credentials][:token]
-
-    # #puts access_token.credentials[:expires_at]
-    # puts access_token[:credentials][:expires_at]
-    # puts "----------------------------------------"
     data = access_token[:info]
     credentials = access_token[:credentials]
     user = User.where(email: data[:email]).first
@@ -46,18 +31,17 @@ class User < ApplicationRecord
   def retrieve_emails service
     begin
       before_date = DateTime.now
-      after_date = self.last_sync
+      after_date = last_sync
       emails = service.get_emails(after_date.to_i, before_date.to_i)
       unless emails.messages.nil?
         # WIP later its better to add the last sync email date on the user attribute, so we can continue from there
         #self.update_attributes(last_sync: before_date)
-        return emails
+        emails
       end
       nil
-    rescue => exception
-      logger.error "An error ocurred when retrieving emails from user #{self.email}, #{exception}"
-      return nil
+    rescue StandardError => exception
+      logger.error "An error ocurred when retrieving emails from user #{email}, #{exception}"
+      nil
     end
   end
-
 end
