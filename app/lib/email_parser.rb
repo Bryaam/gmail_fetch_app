@@ -25,13 +25,11 @@ class EmailParser
 
         # Determining direction according to label
         direction = EmailParser.get_email_direction labels
-        # INBOX would be inbound
-        # SENT would be outbound
 
         data = payload.parts[0].body.data # Will raise exception if no body is present
         data = data.to_str if data
 
-        registered_email = Email.new(
+        return Email.new(
           id,
           EmailParser.parse_email_lists(to),
           EmailParser.parse_email_lists(from),
@@ -41,11 +39,10 @@ class EmailParser
           date,
           direction
         )
-        return registered_email
       end
     rescue => exception
       # WIP
-      p exception
+      Rails.logger.send(:error, exception)
       return nil
     end
   end
@@ -57,6 +54,8 @@ class EmailParser
     return nil
   end
 
+  # INBOX would be inbound
+  # SENT would be outbound
   def self.get_email_direction labels
     return INBOUND_EMAIL_LABEL if labels.include? 'INBOX'
     return OUTBOUND_EMAIL_LABEL if labels.include? 'SENT'

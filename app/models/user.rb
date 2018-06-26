@@ -55,7 +55,7 @@ class User < ApplicationRecord
       end
       nil
     rescue => exception
-      Rails.logger.error("An error ocurred when retrieving emails from user #{self.email}")
+      logger.error "An error ocurred when retrieving emails from user #{self.email}, #{exception}"
       return nil
     end
   end

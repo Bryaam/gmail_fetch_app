@@ -19,9 +19,7 @@ class DashboardController < ApplicationController
       p "-------------------------------"
     rescue => exception
       # Set credentials to inactive state or refresh them
-      p "-----------------------------------"
-      p exception
-      p "-----------------------------------"
+      logger.error exception
     end
   end
 

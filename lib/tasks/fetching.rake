@@ -30,9 +30,7 @@ namespace :fetching do
         end
       rescue => exception
         # WIP
-        puts "Error"
-        puts exception
-        Rails.logger.error("An error ocurred")
+        Rails.logger.send(:error, exception)
       end
     end
   end
