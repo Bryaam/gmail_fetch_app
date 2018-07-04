@@ -9,16 +9,17 @@ class DashboardController < ApplicationController
     begin
       service = GoogleApi.new @user
 
-      @messages_list = service.get_emails DateTime.now - 1.hour
+      before_date = DateTime.now
+      after_date = @user.last_sync
+
+      @messages_list = service.get_emails(after_date.to_i, before_date.to_i)
 
       p "-------------------------------"
       p @messages_list
       p "-------------------------------"
     rescue => exception
       # Set credentials to inactive state or refresh them
-      p "-----------------------------------"
-      p exception
-      p "-----------------------------------"
+      Rails.logger.send(:error, exception)
     end
   end
 
