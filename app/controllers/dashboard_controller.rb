@@ -19,7 +19,7 @@ class DashboardController < ApplicationController
       p "-------------------------------"
     rescue => exception
       # Set credentials to inactive state or refresh them
-      logger.error exception
+      Rails.logger.send(:error, exception)
     end
   end
 

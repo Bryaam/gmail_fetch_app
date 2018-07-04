@@ -36,7 +36,16 @@ class Email
   end
 
   def filter_email?
-    health_iq_only_filter && duplicateds_filter && blacklist_filter
+    filter_1 = health_iq_only_filter
+    Rails.logger.send(:debug, "Email: '#{subject}' filtered by Filter 1 status: #{filter_1}")
+    filter_2 = duplicateds_filter
+    Rails.logger.send(:debug, "Email: '#{subject}' filtered by Filter 2 status: #{filter_2}")
+    filter_3 = blacklist_filter
+    Rails.logger.send(:debug, "Email: '#{subject}' filtered by Filter 3 status: #{filter_3}")
+    final = filter_1 || filter_2 || filter_3
+    Rails.logger.send(:debug, "Email: '#{subject}' Final result: #{final}")
+    final
+    #health_iq_only_filter || duplicateds_filter || blacklist_filter
   end
 
   # Returns true if TO, FROM and CC only contains emails with health iq domain

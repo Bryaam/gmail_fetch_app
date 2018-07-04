@@ -36,11 +36,11 @@ class User < ApplicationRecord
       unless emails.messages.nil?
         # WIP later its better to add the last sync email date on the user attribute, so we can continue from there
         #self.update_attributes(last_sync: before_date)
-        emails
+        return emails
       end
       nil
     rescue StandardError => exception
-      logger.error "An error ocurred when retrieving emails from user #{email}, #{exception}"
+      Rails.logger.send(:error, "An error ocurred when retrieving emails from user #{email}, #{exception}")
       nil
     end
   end

@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 namespace :fetching do
   desc 'Retrieves every user email list'
   task email_retrieve: :environment do
     User.all.each do |user|
-      puts "Checking user #{user.email}"
+      Rails.logger.send(:info, "Checking user #{user.email}")
       user.credential.refresh! if user.credential.expired?
       service = GoogleApi.new user
 
@@ -19,6 +17,7 @@ namespace :fetching do
 
       begin
         if emails&.messages
+          Rails.logger.send(:info, "Processing emails for user #{user.email}")
           emails.messages.reverse_each do |email|
             current_email = service.get_email email
             valid_email = EmailParser.parse(current_email, user.last_email_id)
@@ -27,7 +26,8 @@ namespace :fetching do
                                      last_email_id: valid_email.id)
               unless valid_email.filter_email?
                 # Send WIP
-
+                Salesforce.show(valid_email)
+                Rails.logger.send(:info, "Email with id #{valid_email.id} submitted for user #{user.email}")
               end
             end
           end

@@ -20,8 +20,8 @@
 
 set :output, "#{path}/log/whenever.log"
 
-every 2.minutes do
-  rake "fetching:email_retrieve",  environment: 'development'
+every 10.minutes do
+ rake "fetching:email_retrieve",  environment: 'development'
 end
 
 # every 2.minutes do

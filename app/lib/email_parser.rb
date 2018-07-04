@@ -5,7 +5,7 @@ class EmailParser
   def self.parse(email_body, last_email_id)
     begin
       id = email_body.id
-      return nil if id == last_email_id
+      return nil if EmailParser.reject_invalid_messages(email_body, last_email_id)
       labels = email_body.label_ids
 
       epoch_date = email_body.internal_date # This can be used to determine the last syncronized email
@@ -40,6 +40,12 @@ class EmailParser
       Rails.logger.send(:error, exception)
       nil
     end
+  end
+
+  # Discard the email if belongs to CHAT category or has been processed the last time
+  def self.reject_invalid_messages(email_body, last_email_id)
+    return true if email_body.id == last_email_id || email_body.label_ids.include?('CHAT')
+    false
   end
 
   def self.get_header_attribute(collection, key)
