@@ -17,10 +17,11 @@ namespace :fetching do
 
       begin
         if emails&.messages
+          email_parser = EmailParser.new
           Rails.logger.send(:info, "Processing emails for user #{user.email}")
           emails.messages.reverse_each do |email|
             current_email = service.get_email email
-            valid_email = EmailParser.parse(current_email, user.last_email_id)
+            valid_email = email_parser.parse(current_email, user.last_email_id)
             if valid_email
               user.update_attributes(last_sync: Time.parse(valid_email.sent_at),
                                      last_email_id: valid_email.id)
